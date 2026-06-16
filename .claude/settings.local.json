@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node tools/validate-puzzles.mjs)"
+      "Bash(node tools/validate-puzzles.mjs)",
+      "mcp__Netlify__netlify-team-services-reader",
+      "mcp__Netlify__netlify-project-services-updater",
+      "mcp__Netlify__netlify-deploy-services-updater"
     ]
   }
 }
