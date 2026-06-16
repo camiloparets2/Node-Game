@@ -11,22 +11,43 @@
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
 </head>
 <body>
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-mark">CP</div>
+    <div class="preloader-bar"><span></span></div>
+  </div>
+
+  <!-- Animated background layers -->
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- Cursor spotlight + dot -->
+  <div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <!-- NAV -->
   <header class="nav" id="nav">
     <div class="container nav-inner">
-      <a href="#top" class="brand">CP<span>.</span></a>
-      <nav class="nav-links">
-        <a href="#about">About</a>
-        <a href="#analytics">Analytics</a>
-        <a href="#projects">Projects</a>
-        <a href="#videos">Videos</a>
-        <a href="#experience">Experience</a>
-        <a href="#contact" class="nav-cta">Contact</a>
+      <a href="#top" class="brand" data-magnetic>CP<span>.</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#about" data-nav>About</a>
+        <a href="#analytics" data-nav>Analytics</a>
+        <a href="#projects" data-nav>Projects</a>
+        <a href="#videos" data-nav>Videos</a>
+        <a href="#experience" data-nav>Experience</a>
+        <a href="#contact" class="nav-cta" data-magnetic>Contact</a>
       </nav>
       <button class="nav-toggle" aria-label="Toggle menu" id="navToggle">
         <span></span><span></span><span></span>
@@ -36,37 +57,61 @@
 
   <!-- HERO -->
   <section class="hero" id="top">
-    <div class="hero-bg"></div>
-    <div class="container hero-inner reveal">
-      <p class="hero-eyebrow">Winter Haven, FL · Data Science & Analytics</p>
-      <h1 class="hero-title">Camilo Parets<span class="accent">.</span></h1>
-      <h2 class="hero-sub">Data Analyst &amp; Developer</h2>
-      <p class="hero-lead">
-        High-impact Data Analyst driving operational efficiency through SQL, Power BI,
+    <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <p class="hero-eyebrow reveal" data-reveal="up">
+        <span class="status-dot"></span> Winter Haven, FL · Available for new roles
+      </p>
+      <h1 class="hero-title reveal" data-reveal="up" data-delay="1">
+        <span class="line"><span class="word">Camilo</span></span>
+        <span class="line"><span class="word">Parets<span class="accent">.</span></span></span>
+      </h1>
+      <h2 class="hero-sub reveal" data-reveal="up" data-delay="2">
+        <span class="hero-static">I'm a</span>
+        <span class="rotator" id="rotator" aria-live="polite"><span>Data Analyst</span></span>
+      </h2>
+      <p class="hero-lead reveal" data-reveal="up" data-delay="3">
+        High-impact analyst driving operational efficiency through SQL, Power BI,
         and predictive modeling — and a builder who ships full-stack apps, games, and
         data tools on the side.
       </p>
-      <div class="hero-actions">
-        <a href="#analytics" class="btn btn-primary">View Analytics Work</a>
-        <a href="#projects" class="btn btn-ghost">Developer Projects</a>
+      <div class="hero-actions reveal" data-reveal="up" data-delay="4">
+        <a href="#analytics" class="btn btn-primary" data-magnetic><span>View Analytics Work</span></a>
+        <a href="#projects" class="btn btn-ghost" data-magnetic><span>Developer Projects</span></a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats reveal" data-reveal="up" data-delay="5">
         <div class="stat"><span class="stat-num" data-target="37" data-suffix="%">0%</span><span class="stat-label">Packing productivity gain</span></div>
         <div class="stat"><span class="stat-num" data-target="9.9" data-suffix="%" data-decimals="1">0%</span><span class="stat-label">Customer Quality Score lift</span></div>
         <div class="stat"><span class="stat-num" data-target="50" data-suffix="+">0</span><span class="stat-label">Team members led</span></div>
       </div>
     </div>
+    <a href="#about" class="scroll-cue" aria-label="Scroll down"><span></span></a>
   </section>
+
+  <!-- SKILLS MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>SQL</span><i>✦</i><span>Power BI</span><i>✦</i><span>Oracle Database</span><i>✦</i>
+      <span>Predictive Modeling</span><i>✦</i><span>Python</span><i>✦</i><span>R</span><i>✦</i>
+      <span>TypeScript</span><i>✦</i><span>Data Visualization</span><i>✦</i><span>Process Automation</span><i>✦</i>
+      <span>WMS</span><i>✦</i><span>Excel</span><i>✦</i><span>AutoCAD</span><i>✦</i>
+      <span>SQL</span><i>✦</i><span>Power BI</span><i>✦</i><span>Oracle Database</span><i>✦</i>
+      <span>Predictive Modeling</span><i>✦</i><span>Python</span><i>✦</i><span>R</span><i>✦</i>
+      <span>TypeScript</span><i>✦</i><span>Data Visualization</span><i>✦</i><span>Process Automation</span><i>✦</i>
+      <span>WMS</span><i>✦</i><span>Excel</span><i>✦</i><span>AutoCAD</span><i>✦</i>
+    </div>
+  </div>
 
   <!-- ABOUT -->
   <section class="section" id="about">
     <div class="container">
-      <div class="section-head reveal">
-        <span class="kicker">01 — About</span>
-        <h2>Turning operations data into decisions.</h2>
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">01</span> About</span>
+        <h2 class="gradient-text">Turning operations data into decisions.</h2>
       </div>
       <div class="about-grid">
-        <div class="about-text reveal">
+        <div class="about-text reveal" data-reveal="left">
           <p>
             I'm a Business Data Analyst at <strong>DHL Supply Chain</strong> who grew from the
             warehouse floor into analytics — and that path shapes how I work. I've operated the
@@ -79,9 +124,9 @@
             South Florida and certifications spanning AI, analytics, and supply chain.
           </p>
         </div>
-        <div class="about-skills reveal">
+        <div class="about-skills reveal" data-reveal="right">
           <h3>Core Toolkit</h3>
-          <ul class="chips">
+          <ul class="chips stagger">
             <li>SQL</li><li>Power BI</li><li>Oracle Database</li>
             <li>Predictive Modeling</li><li>Python</li><li>R</li>
             <li>TypeScript</li><li>MS Excel</li><li>AutoCAD</li>
@@ -95,9 +140,9 @@
   <!-- ANALYTICS -->
   <section class="section section-alt" id="analytics">
     <div class="container">
-      <div class="section-head reveal">
-        <span class="kicker">02 — Analytics &amp; Data Science</span>
-        <h2>Where the data work lives.</h2>
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">02</span> Analytics &amp; Data Science</span>
+        <h2 class="gradient-text">Where the data work lives.</h2>
         <p class="section-intro">
           My core discipline. Professional analytics at DHL and Intel, plus data-science and
           visualization projects I build to keep sharpening the craft.
@@ -105,7 +150,7 @@
       </div>
 
       <div class="feature-cards">
-        <article class="fcard reveal">
+        <article class="fcard tilt reveal" data-reveal="up">
           <div class="fcard-tag">DHL Supply Chain · Professional</div>
           <h3>Operations Analytics Suite</h3>
           <p>
@@ -120,7 +165,7 @@
           <div class="fcard-stack"><span>SQL</span><span>Power BI</span><span>Oracle</span><span>Time Studies</span></div>
         </article>
 
-        <article class="fcard reveal">
+        <article class="fcard tilt reveal" data-reveal="up" data-delay="1">
           <div class="fcard-tag">Intel Corp · Internship</div>
           <h3>Renewable-Driven Data Center Analysis</h3>
           <p>
@@ -132,8 +177,8 @@
         </article>
       </div>
 
-      <h3 class="subhead reveal">Interactive Case Study</h3>
-      <a class="casestudy reveal" href="slotting-simulator.html">
+      <h3 class="subhead reveal" data-reveal="up">Interactive Case Study</h3>
+      <a class="casestudy tilt reveal" data-reveal="up" href="slotting-simulator.html">
         <div class="casestudy-body">
           <span class="casestudy-tag">Python · Supply Chain Analytics · Live Demo</span>
           <h4>Velocity-Based Slotting Simulator</h4>
@@ -142,7 +187,7 @@
             shortest, most reachable locations to cut picker travel and lift throughput. Open the live
             before/after warehouse-floor demo and press <strong>Run optimization</strong> to watch it work.
           </p>
-          <span class="casestudy-cta">Open interactive demo →</span>
+          <span class="casestudy-cta">Open interactive demo <span class="arrow">→</span></span>
         </div>
         <div class="casestudy-viz" aria-hidden="true">
           <span class="cs-chip" style="--c:#FF5A3C"></span>
@@ -157,7 +202,7 @@
         </div>
       </a>
 
-      <h3 class="subhead reveal">Data &amp; Analytics Projects</h3>
+      <h3 class="subhead reveal" data-reveal="up">Data &amp; Analytics Projects</h3>
       <div class="cards" id="analyticsProjects"></div>
     </div>
   </section>
@@ -165,17 +210,17 @@
   <!-- DEVELOPER PROJECTS -->
   <section class="section" id="projects">
     <div class="container">
-      <div class="section-head reveal">
-        <span class="kicker">03 — Developer Projects</span>
-        <h2>Things I've built.</h2>
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">03</span> Developer Projects</span>
+        <h2 class="gradient-text">Things I've built.</h2>
         <p class="section-intro">
           Beyond analytics, I ship software — AI tools, interactive games, and full-stack apps.
           Pulled straight from my GitHub.
         </p>
       </div>
       <div class="cards" id="devProjects"></div>
-      <div class="center reveal">
-        <a href="https://github.com/camiloparets2" target="_blank" rel="noopener" class="btn btn-ghost">See all on GitHub →</a>
+      <div class="center reveal" data-reveal="up">
+        <a href="https://github.com/camiloparets2" target="_blank" rel="noopener" class="btn btn-ghost" data-magnetic><span>See all on GitHub →</span></a>
       </div>
     </div>
   </section>
@@ -183,16 +228,16 @@
   <!-- VIDEOS -->
   <section class="section section-alt" id="videos">
     <div class="container">
-      <div class="section-head reveal">
-        <span class="kicker">04 — Featured Videos</span>
-        <h2>Before the data — the story.</h2>
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">04</span> Featured Videos</span>
+        <h2 class="gradient-text">Before the data — the story.</h2>
         <p class="section-intro">
           A look at where it started: my high-school valedictorian speech, and a creative video
           I made before stepping into analytics.
         </p>
       </div>
       <div class="video-grid">
-        <figure class="video-card reveal">
+        <figure class="video-card reveal" data-reveal="up">
           <div class="video-frame">
             <iframe
               src="https://drive.google.com/file/d/1CeaysKyAodnSQkmnyUPwKFH2K81_11bq/preview"
@@ -203,7 +248,7 @@
             <p>My high-school valedictorian address — the foundation of the leadership and drive that carry into my work today.</p>
           </figcaption>
         </figure>
-        <figure class="video-card reveal">
+        <figure class="video-card reveal" data-reveal="up" data-delay="1">
           <div class="video-frame">
             <iframe
               src="https://www.youtube.com/embed/0zmw95PyzPI"
@@ -222,12 +267,12 @@
   <!-- EXPERIENCE -->
   <section class="section" id="experience">
     <div class="container">
-      <div class="section-head reveal">
-        <span class="kicker">05 — Experience</span>
-        <h2>The path from floor to analytics.</h2>
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">05</span> Experience</span>
+        <h2 class="gradient-text">The path from floor to analytics.</h2>
       </div>
       <div class="timeline">
-        <div class="tl-item reveal">
+        <div class="tl-item reveal" data-reveal="left">
           <div class="tl-dot"></div>
           <div class="tl-body">
             <span class="tl-date">May 2025 – Present</span>
@@ -241,7 +286,7 @@
             </ul>
           </div>
         </div>
-        <div class="tl-item reveal">
+        <div class="tl-item reveal" data-reveal="left" data-delay="1">
           <div class="tl-dot"></div>
           <div class="tl-body">
             <span class="tl-date">May 2024 – Sep 2025</span>
@@ -252,7 +297,7 @@
             </ul>
           </div>
         </div>
-        <div class="tl-item reveal">
+        <div class="tl-item reveal" data-reveal="left" data-delay="2">
           <div class="tl-dot"></div>
           <div class="tl-body">
             <span class="tl-date">Feb 2023 – Apr 2024</span>
@@ -263,7 +308,7 @@
             </ul>
           </div>
         </div>
-        <div class="tl-item reveal">
+        <div class="tl-item reveal" data-reveal="left" data-delay="3">
           <div class="tl-dot"></div>
           <div class="tl-body">
             <span class="tl-date">Aug 2022 – Jan 2023</span>
@@ -281,12 +326,12 @@
   <!-- EDUCATION & CERTS -->
   <section class="section section-alt" id="education">
     <div class="container">
-      <div class="section-head reveal">
-        <span class="kicker">06 — Education &amp; Certifications</span>
-        <h2>Credentials.</h2>
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">06</span> Education &amp; Certifications</span>
+        <h2 class="gradient-text">Credentials.</h2>
       </div>
       <div class="edu-grid">
-        <div class="edu-col reveal">
+        <div class="edu-col reveal" data-reveal="left">
           <h3>Education</h3>
           <div class="edu-item">
             <h4>B.S. — Data Science &amp; Analytics</h4>
@@ -297,9 +342,9 @@
             <span>Miami Dade College · 2020 – 2021</span>
           </div>
         </div>
-        <div class="edu-col reveal">
+        <div class="edu-col reveal" data-reveal="right">
           <h3>Certifications</h3>
-          <ul class="cert-list">
+          <ul class="cert-list stagger">
             <li><span>AI using Python</span><em>Harvard '23</em></li>
             <li><span>Data Analytics</span><em>Google '23</em></li>
             <li><span>Supply Chain Analytics</span><em>Rutgers '23</em></li>
@@ -314,14 +359,14 @@
 
   <!-- CONTACT -->
   <section class="section contact" id="contact">
-    <div class="container reveal">
-      <span class="kicker">07 — Contact</span>
-      <h2>Let's build something with your data.</h2>
+    <div class="container reveal" data-reveal="up">
+      <span class="kicker"><span class="kicker-num">07</span> Contact</span>
+      <h2 class="gradient-text">Let's build something with your data.</h2>
       <p class="contact-lead">Open to data analyst, analytics engineering, and development roles. Reach out anytime.</p>
       <div class="contact-links">
-        <a href="mailto:camiloparets2@gmail.com" class="btn btn-primary">camiloparets2@gmail.com</a>
-        <a href="tel:7868032037" class="btn btn-ghost">786-803-2037</a>
-        <a href="https://github.com/camiloparets2" target="_blank" rel="noopener" class="btn btn-ghost">GitHub</a>
+        <a href="mailto:camiloparets2@gmail.com" class="btn btn-primary" data-magnetic><span>camiloparets2@gmail.com</span></a>
+        <a href="tel:7868032037" class="btn btn-ghost" data-magnetic><span>786-803-2037</span></a>
+        <a href="https://github.com/camiloparets2" target="_blank" rel="noopener" class="btn btn-ghost" data-magnetic><span>GitHub</span></a>
       </div>
     </div>
   </section>
@@ -329,7 +374,7 @@
   <footer class="footer">
     <div class="container">
       <span>© <span id="year"></span> Camilo Parets Dominguez</span>
-      <span>Built &amp; deployed on Netlify</span>
+      <span>Designed &amp; built with care</span>
     </div>
   </footer>
 
