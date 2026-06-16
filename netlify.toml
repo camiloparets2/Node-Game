@@ -1,0 +1,9 @@
+# Netlify config for Camilo Parets — portfolio site
+[build]
+  publish = "portfolio"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
