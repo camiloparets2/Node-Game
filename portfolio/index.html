@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camilo Parets — Data Analyst & Developer</title>
+  <meta name="description" content="Portfolio of Camilo Parets Dominguez — Data Analyst & Developer specializing in SQL, Power BI, predictive modeling, and full-stack development." />
+  <meta name="author" content="Camilo Parets Dominguez" />
+  <meta property="og:title" content="Camilo Parets — Data Analyst & Developer" />
+  <meta property="og:description" content="Data Analyst & Developer. SQL, Power BI, predictive modeling, and full-stack projects." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+</head>
+<body>
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-mark">CP</div>
+    <div class="preloader-bar"><span></span></div>
+  </div>
+
+  <!-- Animated background layers -->
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- Cursor spotlight + dot -->
+  <div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a href="#top" class="brand" data-magnetic>CP<span>.</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#about" data-nav>About</a>
+        <a href="#analytics" data-nav>Analytics</a>
+        <a href="#projects" data-nav>Projects</a>
+        <a href="#videos" data-nav>Videos</a>
+        <a href="#experience" data-nav>Experience</a>
+        <a href="#contact" class="nav-cta" data-magnetic>Contact</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Toggle menu" id="navToggle">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <p class="hero-eyebrow reveal" data-reveal="up">
+        <span class="status-dot"></span> Winter Haven, FL · Available for new roles
+      </p>
+      <h1 class="hero-title reveal" data-reveal="up" data-delay="1">
+        <span class="line"><span class="word">Camilo</span></span>
+        <span class="line"><span class="word">Parets<span class="accent">.</span></span></span>
+      </h1>
+      <h2 class="hero-sub reveal" data-reveal="up" data-delay="2">
+        <span class="hero-static">I'm a</span>
+        <span class="rotator" id="rotator" aria-live="polite"><span>Data Analyst</span></span>
+      </h2>
+      <p class="hero-lead reveal" data-reveal="up" data-delay="3">
+        High-impact analyst driving operational efficiency through SQL, Power BI,
+        and predictive modeling — and a builder who ships full-stack apps, games, and
+        data tools on the side.
+      </p>
+      <div class="hero-actions reveal" data-reveal="up" data-delay="4">
+        <a href="#analytics" class="btn btn-primary" data-magnetic><span>View Analytics Work</span></a>
+        <a href="#projects" class="btn btn-ghost" data-magnetic><span>Developer Projects</span></a>
+      </div>
+      <div class="hero-stats reveal" data-reveal="up" data-delay="5">
+        <div class="stat"><span class="stat-num" data-target="37" data-suffix="%">0%</span><span class="stat-label">Packing productivity gain</span></div>
+        <div class="stat"><span class="stat-num" data-target="9.9" data-suffix="%" data-decimals="1">0%</span><span class="stat-label">Customer Quality Score lift</span></div>
+        <div class="stat"><span class="stat-num" data-target="50" data-suffix="+">0</span><span class="stat-label">Team members led</span></div>
+      </div>
+    </div>
+    <a href="#about" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+  </section>
+
+  <!-- SKILLS MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>SQL</span><i>✦</i><span>Power BI</span><i>✦</i><span>Oracle Database</span><i>✦</i>
+      <span>Predictive Modeling</span><i>✦</i><span>Python</span><i>✦</i><span>R</span><i>✦</i>
+      <span>TypeScript</span><i>✦</i><span>Data Visualization</span><i>✦</i><span>Process Automation</span><i>✦</i>
+      <span>WMS</span><i>✦</i><span>Excel</span><i>✦</i><span>AutoCAD</span><i>✦</i>
+      <span>SQL</span><i>✦</i><span>Power BI</span><i>✦</i><span>Oracle Database</span><i>✦</i>
+      <span>Predictive Modeling</span><i>✦</i><span>Python</span><i>✦</i><span>R</span><i>✦</i>
+      <span>TypeScript</span><i>✦</i><span>Data Visualization</span><i>✦</i><span>Process Automation</span><i>✦</i>
+      <span>WMS</span><i>✦</i><span>Excel</span><i>✦</i><span>AutoCAD</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">01</span> About</span>
+        <h2 class="gradient-text">Turning operations data into decisions.</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal" data-reveal="left">
+          <p>
+            I'm a Business Data Analyst at <strong>DHL Supply Chain</strong> who grew from the
+            warehouse floor into analytics — and that path shapes how I work. I've operated the
+            equipment, planned the logistics flow, and led the teams, so when I build a SQL query,
+            an Oracle database, or a Power BI dashboard, I know exactly which decision it needs to support.
+          </p>
+          <p>
+            Outside of work I build software: AI marketplaces, interactive games, and data-visualization
+            tools. I hold a <strong>B.S. in Data Science &amp; Analytics</strong> from the University of
+            South Florida and certifications spanning AI, analytics, and supply chain.
+          </p>
+        </div>
+        <div class="about-skills reveal" data-reveal="right">
+          <h3>Core Toolkit</h3>
+          <ul class="chips stagger">
+            <li>SQL</li><li>Power BI</li><li>Oracle Database</li>
+            <li>Predictive Modeling</li><li>Python</li><li>R</li>
+            <li>TypeScript</li><li>MS Excel</li><li>AutoCAD</li>
+            <li>Data Visualization</li><li>Process Automation</li><li>WMS</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="section section-alt" id="analytics">
+    <div class="container">
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">02</span> Analytics &amp; Data Science</span>
+        <h2 class="gradient-text">Where the data work lives.</h2>
+        <p class="section-intro">
+          My core discipline. Professional analytics at DHL and Intel, plus data-science and
+          visualization projects I build to keep sharpening the craft.
+        </p>
+      </div>
+
+      <div class="feature-cards">
+        <article class="fcard tilt reveal" data-reveal="up">
+          <div class="fcard-tag">DHL Supply Chain · Professional</div>
+          <h3>Operations Analytics Suite</h3>
+          <p>
+            Engineered complex SQL queries and time studies to surface workflow bottlenecks, then built a
+            standardized Power BI reporting suite that became the benchmark for cross-site metric alignment.
+          </p>
+          <ul class="fcard-metrics">
+            <li><strong>37%</strong> increase in packing productivity</li>
+            <li><strong>9.9%</strong> improvement in Customer Quality Scores</li>
+            <li><strong>3 → 1</strong> data sources consolidated into one Oracle database</li>
+          </ul>
+          <div class="fcard-stack"><span>SQL</span><span>Power BI</span><span>Oracle</span><span>Time Studies</span></div>
+        </article>
+
+        <article class="fcard tilt reveal" data-reveal="up" data-delay="1">
+          <div class="fcard-tag">Intel Corp · Internship</div>
+          <h3>Renewable-Driven Data Center Analysis</h3>
+          <p>
+            Collaborated with Intel's Sustainability Team (Global Tech Experience) to investigate the factors
+            behind data-center location decisions — analyzing regional energy availability, sustainability
+            metrics, and long-term environmental impact.
+          </p>
+          <div class="fcard-stack"><span>Data Analysis</span><span>Sustainability</span><span>Research</span></div>
+        </article>
+      </div>
+
+      <h3 class="subhead reveal" data-reveal="up">Interactive Case Study</h3>
+      <a class="casestudy tilt reveal" data-reveal="up" href="slotting-simulator.html">
+        <div class="casestudy-body">
+          <span class="casestudy-tag">Python · Supply Chain Analytics · Live Demo</span>
+          <h4>Velocity-Based Slotting Simulator</h4>
+          <p>
+            A Python model that re-slots every SKU by pick velocity, placing the fastest movers in the
+            shortest, most reachable locations to cut picker travel and lift throughput. Open the live
+            before/after warehouse-floor demo and press <strong>Run optimization</strong> to watch it work.
+          </p>
+          <span class="casestudy-cta">Open interactive demo <span class="arrow">→</span></span>
+        </div>
+        <div class="casestudy-viz" aria-hidden="true">
+          <span class="cs-chip" style="--c:#FF5A3C"></span>
+          <span class="cs-chip" style="--c:#F2B33D"></span>
+          <span class="cs-chip" style="--c:#4C8FB5"></span>
+          <span class="cs-chip" style="--c:#FF5A3C"></span>
+          <span class="cs-chip" style="--c:#34D8B4"></span>
+          <span class="cs-chip" style="--c:#F2B33D"></span>
+          <span class="cs-chip" style="--c:#4C8FB5"></span>
+          <span class="cs-chip" style="--c:#FF5A3C"></span>
+          <span class="cs-chip" style="--c:#34D8B4"></span>
+        </div>
+      </a>
+
+      <h3 class="subhead reveal" data-reveal="up">Data &amp; Analytics Projects</h3>
+      <div class="cards" id="analyticsProjects"></div>
+    </div>
+  </section>
+
+  <!-- DEVELOPER PROJECTS -->
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">03</span> Developer Projects</span>
+        <h2 class="gradient-text">Things I've built.</h2>
+        <p class="section-intro">
+          Beyond analytics, I ship software — AI tools, interactive games, and full-stack apps.
+          Pulled straight from my GitHub.
+        </p>
+      </div>
+      <div class="cards" id="devProjects"></div>
+      <div class="center reveal" data-reveal="up">
+        <a href="https://github.com/camiloparets2" target="_blank" rel="noopener" class="btn btn-ghost" data-magnetic><span>See all on GitHub →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEOS -->
+  <section class="section section-alt" id="videos">
+    <div class="container">
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">04</span> Featured Videos</span>
+        <h2 class="gradient-text">Before the data — the story.</h2>
+        <p class="section-intro">
+          A look at where it started: my high-school valedictorian speech, and a creative video
+          I made before stepping into analytics.
+        </p>
+      </div>
+      <div class="video-grid">
+        <figure class="video-card reveal" data-reveal="up">
+          <div class="video-frame">
+            <iframe
+              src="https://drive.google.com/file/d/1CeaysKyAodnSQkmnyUPwKFH2K81_11bq/preview"
+              allow="autoplay" allowfullscreen title="Valedictorian Graduation Speech"></iframe>
+          </div>
+          <figcaption>
+            <h3>🎓 Valedictorian Graduation Speech</h3>
+            <p>My high-school valedictorian address — the foundation of the leadership and drive that carry into my work today.</p>
+          </figcaption>
+        </figure>
+        <figure class="video-card reveal" data-reveal="up" data-delay="1">
+          <div class="video-frame">
+            <iframe
+              src="https://www.youtube.com/embed/0zmw95PyzPI"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen title="Creative video before becoming an analyst"></iframe>
+          </div>
+          <figcaption>
+            <h3>🎬 A Creative Project</h3>
+            <p>A video I created before becoming an analyst — a reminder that storytelling and creativity feed good data work.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="section" id="experience">
+    <div class="container">
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">05</span> Experience</span>
+        <h2 class="gradient-text">The path from floor to analytics.</h2>
+      </div>
+      <div class="timeline">
+        <div class="tl-item reveal" data-reveal="left">
+          <div class="tl-dot"></div>
+          <div class="tl-body">
+            <span class="tl-date">May 2025 – Present</span>
+            <h3>Business Data Analyst</h3>
+            <span class="tl-org">DHL Supply Chain</span>
+            <ul>
+              <li>Engineered complex SQL queries and time studies, lifting packing productivity by 37%.</li>
+              <li>Architected a centralized Oracle database consolidating three data sources.</li>
+              <li>Built Power BI dashboards correlating customer feedback with packer performance (+9.9% CQS).</li>
+              <li>Deployed a standardized Power BI suite as the benchmark for cross-site metric alignment.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item reveal" data-reveal="left" data-delay="1">
+          <div class="tl-dot"></div>
+          <div class="tl-body">
+            <span class="tl-date">May 2024 – Sep 2025</span>
+            <h3>Operations Supervisor</h3>
+            <span class="tl-org">DHL Supply Chain</span>
+            <ul>
+              <li>Managed and mentored 50+ forklift operators, driving career development and safety compliance.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item reveal" data-reveal="left" data-delay="2">
+          <div class="tl-dot"></div>
+          <div class="tl-body">
+            <span class="tl-date">Feb 2023 – Apr 2024</span>
+            <h3>Flow / Logistics Planner</h3>
+            <span class="tl-org">DHL Supply Chain</span>
+            <ul>
+              <li>Orchestrated end-to-end logistics flow for inbound and outbound operations.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item reveal" data-reveal="left" data-delay="3">
+          <div class="tl-dot"></div>
+          <div class="tl-body">
+            <span class="tl-date">Aug 2022 – Jan 2023</span>
+            <h3>Forklift Operator</h3>
+            <span class="tl-org">DHL Supply Chain</span>
+            <ul>
+              <li>Cross-trained on all Crown warehouse equipment for inbound/outbound operations.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION & CERTS -->
+  <section class="section section-alt" id="education">
+    <div class="container">
+      <div class="section-head reveal" data-reveal="up">
+        <span class="kicker"><span class="kicker-num">06</span> Education &amp; Certifications</span>
+        <h2 class="gradient-text">Credentials.</h2>
+      </div>
+      <div class="edu-grid">
+        <div class="edu-col reveal" data-reveal="left">
+          <h3>Education</h3>
+          <div class="edu-item">
+            <h4>B.S. — Data Science &amp; Analytics</h4>
+            <span>University of South Florida · 2022 – 2024</span>
+          </div>
+          <div class="edu-item">
+            <h4>A.A. — Computer Science</h4>
+            <span>Miami Dade College · 2020 – 2021</span>
+          </div>
+        </div>
+        <div class="edu-col reveal" data-reveal="right">
+          <h3>Certifications</h3>
+          <ul class="cert-list stagger">
+            <li><span>AI using Python</span><em>Harvard '23</em></li>
+            <li><span>Data Analytics</span><em>Google '23</em></li>
+            <li><span>Supply Chain Analytics</span><em>Rutgers '23</em></li>
+            <li><span>Engineering Project Management</span><em>Rice '20</em></li>
+            <li><span>Certified Supply Chain Manager (CSCM)</span><em>DHL '25</em></li>
+            <li><span>Certified Supply Chain Specialist (CSCS)</span><em>DHL '23</em></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section contact" id="contact">
+    <div class="container reveal" data-reveal="up">
+      <span class="kicker"><span class="kicker-num">07</span> Contact</span>
+      <h2 class="gradient-text">Let's build something with your data.</h2>
+      <p class="contact-lead">Open to data analyst, analytics engineering, and development roles. Reach out anytime.</p>
+      <div class="contact-links">
+        <a href="mailto:camiloparets2@gmail.com" class="btn btn-primary" data-magnetic><span>camiloparets2@gmail.com</span></a>
+        <a href="tel:7868032037" class="btn btn-ghost" data-magnetic><span>786-803-2037</span></a>
+        <a href="https://github.com/camiloparets2" target="_blank" rel="noopener" class="btn btn-ghost" data-magnetic><span>GitHub</span></a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <span>© <span id="year"></span> Camilo Parets Dominguez</span>
+      <span>Designed &amp; built with care</span>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
