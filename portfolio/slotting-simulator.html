@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Velocity-Based Slotting Simulator — Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     SLOTTING SIMULATOR — portfolio case study (self-contained)
+     Author: Camilo Parets Dominguez
+     Everything (CSS + JS) is inline so you can host this single
+     .html file, or paste the <section> + <style> + <script> into
+     an existing portfolio page.
+     ============================================================ */
+
+  :root{
+    --bg-deep:#0C1322;
+    --bg-panel:#121B2E;
+    --bg-panel-2:#0E1626;
+    --line:#25324C;
+    --rack:#172238;
+    --rack-line:#27375A;
+    --floor:#0F1A2C;
+    --ink:#EAF0FA;
+    --body:#A9B6CE;
+    --muted:#6B7A97;
+    --amber:#F5A623;
+    --amber-deep:#E89210;
+    --teal:#34D8B4;
+    --v-slow:#4C8FB5;
+    --v-mid:#F2B33D;
+    --v-fast:#FF5A3C;
+    --path-before:#6B7A97;
+    --path-after:#34D8B4;
+    --display:'Space Grotesk',system-ui,-apple-system,sans-serif;
+    --bodyfont:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{margin:0;background:var(--bg-deep);min-height:100vh;padding:56px 0;}
+
+  /* Back to portfolio link */
+  .ss-back{
+    position:fixed;top:18px;left:18px;z-index:50;
+    font-family:var(--mono);font-size:12px;letter-spacing:.06em;
+    color:var(--body);background:rgba(18,27,46,.85);backdrop-filter:blur(8px);
+    border:1px solid var(--line);border-radius:999px;padding:8px 15px;
+    text-decoration:none;transition:.2s;
+  }
+  .ss-back:hover{color:var(--ink);border-color:var(--amber);}
+
+  .slot-sim{
+    background:var(--bg-deep);
+    color:var(--body);
+    font-family:var(--bodyfont);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(20px,4vw,56px);
+    border-radius:18px;
+    border:1px solid var(--line);
+    max-width:1120px;
+    margin:0 auto;
+    position:relative;
+    overflow:hidden;
+  }
+  .slot-sim::before{
+    /* faint grid wash for an ops/control-room feel */
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:
+      linear-gradient(transparent 95%,rgba(245,166,35,.04) 95%) 0 0/100% 34px,
+      linear-gradient(90deg,transparent 95%,rgba(245,166,35,.04) 95%) 0 0/34px 100%;
+    -webkit-mask-image:radial-gradient(120% 80% at 50% 0%,#000 30%,transparent 75%);
+            mask-image:radial-gradient(120% 80% at 50% 0%,#000 30%,transparent 75%);
+  }
+  .slot-sim > *{position:relative;z-index:1;}
+
+  /* ---------- Header ---------- */
+  .ss-eyebrow{
+    font-family:var(--mono);
+    font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--amber);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .ss-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber);}
+  .ss-title{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(30px,5.2vw,52px);
+    line-height:1.02;
+    letter-spacing:-.02em;
+    color:var(--ink);
+    margin:16px 0 12px;
+  }
+  .ss-title em{color:var(--amber);font-style:normal;}
+  .ss-sub{
+    max-width:62ch;font-size:clamp(14px,1.6vw,16.5px);color:var(--body);
+  }
+
+  /* ---------- Main layout ---------- */
+  .ss-stage{
+    display:grid;grid-template-columns:1.55fr .85fr;gap:18px;
+    margin-top:30px;
+  }
+  @media(max-width:820px){ .ss-stage{grid-template-columns:1fr;} }
+
+  .ss-floor-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 14px 16px;
+  }
+  .ss-floor-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    gap:10px;margin-bottom:10px;flex-wrap:wrap;
+  }
+  .ss-floor-head h3{
+    margin:0;font-family:var(--display);font-weight:600;font-size:14px;
+    color:var(--ink);letter-spacing:.01em;
+  }
+  .ss-state-tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    padding:4px 9px;border-radius:999px;border:1px solid var(--line);
+    color:var(--muted);background:var(--bg-panel-2);transition:.4s;
+  }
+  .ss-state-tag.is-after{color:var(--teal);border-color:rgba(52,216,180,.45);}
+
+  /* Warehouse floor */
+  .ss-floor{
+    position:relative;width:100%;aspect-ratio:16/10;
+    background:var(--floor);
+    border:1px solid var(--rack-line);
+    border-radius:9px;overflow:hidden;
+  }
+  .ss-floor svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .ss-chips{position:absolute;inset:0;}
+  .chip{
+    position:absolute;width:5.6%;height:5.4%;
+    border-radius:2px;transform:translate(-50%,-50%);
+    transition:left .85s cubic-bezier(.65,.02,.25,1),
+               top .85s cubic-bezier(.65,.02,.25,1),
+               box-shadow .3s;
+    box-shadow:0 0 0 0 rgba(0,0,0,0);
+    cursor:pointer;
+  }
+  .chip:hover{box-shadow:0 0 0 2px #fff, 0 0 14px rgba(255,255,255,.4);z-index:5;}
+  .reduced .chip{transition:none;}
+
+  /* Legend + controls under floor */
+  .ss-floor-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap;}
+  .ss-legend{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--muted);font-family:var(--mono);}
+  .ss-grad{width:118px;height:9px;border-radius:6px;
+    background:linear-gradient(90deg,var(--v-slow),var(--v-mid),var(--v-fast));}
+  .ss-controls{display:flex;gap:8px;align-items:center;}
+  .ss-seg{display:inline-flex;background:var(--bg-panel-2);border:1px solid var(--line);border-radius:9px;padding:3px;}
+  .ss-seg button{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+    border:0;background:transparent;color:var(--muted);
+    padding:6px 11px;border-radius:6px;cursor:pointer;transition:.2s;
+  }
+  .ss-seg button.active{background:var(--bg-panel);color:var(--ink);box-shadow:0 1px 0 rgba(255,255,255,.04) inset;}
+  .ss-run{
+    font-family:var(--display);font-weight:600;font-size:13px;
+    background:var(--amber);color:#1a1306;border:0;border-radius:9px;
+    padding:9px 16px;cursor:pointer;transition:.2s;letter-spacing:.01em;
+    box-shadow:0 6px 18px -8px var(--amber);
+  }
+  .ss-run:hover{background:var(--amber-deep);transform:translateY(-1px);}
+  .ss-run:active{transform:translateY(0);}
+  .ss-run:focus-visible,.ss-seg button:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+
+  /* ---------- Metrics rail ---------- */
+  .ss-metrics{display:flex;flex-direction:column;gap:12px;}
+  .metric{
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;position:relative;overflow:hidden;
+  }
+  .metric .label{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  .metric .val{font-family:var(--display);font-weight:700;font-size:clamp(26px,4.5vw,34px);color:var(--ink);line-height:1.05;margin-top:6px;letter-spacing:-.01em;}
+  .metric .val .unit{font-size:15px;color:var(--body);font-weight:500;margin-left:3px;}
+  .metric .delta{font-family:var(--mono);font-size:12px;margin-top:7px;display:inline-flex;align-items:center;gap:5px;color:var(--muted);}
+  .metric .delta.good{color:var(--teal);}
+  .metric .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--amber);width:0;transition:width .85s cubic-bezier(.65,.02,.25,1);}
+  .metric.is-after .bar{background:var(--teal);}
+
+  .ss-wave{
+    background:var(--bg-panel-2);border:1px dashed var(--rack-line);border-radius:12px;
+    padding:13px 16px;font-size:12.5px;color:var(--body);
+  }
+  .ss-wave b{color:var(--ink);font-weight:600;}
+  .ss-wave .mono{font-family:var(--mono);color:var(--amber);}
+  .ss-wave .mono.after{color:var(--teal);}
+
+  /* ---------- How it works ---------- */
+  .ss-how{margin-top:40px;}
+  .ss-how h2,.ss-impact h2{
+    font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--amber);margin:0 0 18px;
+  }
+  .ss-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  @media(max-width:820px){ .ss-steps{grid-template-columns:1fr 1fr;} }
+  @media(max-width:480px){ .ss-steps{grid-template-columns:1fr;} }
+  .step{
+    background:var(--bg-panel);border:1px solid var(--line);border-radius:13px;padding:18px 16px;
+  }
+  .step .num{font-family:var(--mono);font-size:12px;color:var(--amber);letter-spacing:.1em;}
+  .step h4{font-family:var(--display);font-weight:600;font-size:15.5px;color:var(--ink);margin:9px 0 7px;}
+  .step p{font-size:13px;color:var(--body);margin:0;}
+  .step code{font-family:var(--mono);font-size:12px;color:var(--teal);background:rgba(52,216,180,.08);padding:1px 5px;border-radius:4px;}
+
+  /* ---------- Impact + tech ---------- */
+  .ss-impact{margin-top:40px;}
+  .ss-impact p{max-width:64ch;font-size:14.5px;color:var(--body);margin:0 0 18px;}
+  .ss-tech{display:flex;gap:8px;flex-wrap:wrap;}
+  .tech{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+    color:var(--body);background:var(--bg-panel);border:1px solid var(--line);
+    border-radius:999px;padding:6px 13px;
+  }
+  .ss-note{margin-top:26px;font-size:11.5px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--line);padding-top:16px;}
+
+  .ss-tip{
+    position:fixed;z-index:9999;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:#06070c;border:1px solid var(--rack-line);border-radius:8px;
+    padding:8px 11px;font-family:var(--mono);font-size:11.5px;color:var(--ink);
+    box-shadow:0 12px 30px -12px #000;white-space:nowrap;
+  }
+  .ss-tip .vbar{display:inline-block;width:38px;height:6px;border-radius:4px;margin-left:7px;vertical-align:middle;}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="ss-back">← Back to portfolio</a>
+
+<section class="slot-sim" aria-label="Velocity-based slotting simulator case study">
+  <div class="ss-eyebrow">
+    <span class="dot"></span>
+    Supply&nbsp;Chain&nbsp;Analytics · DHL&nbsp;Supply&nbsp;Chain · Proof&nbsp;of&nbsp;Concept
+  </div>
+
+  <h1 class="ss-title">Velocity-Based <em>Slotting Simulator</em></h1>
+  <p class="ss-sub">
+    A Python model that re-slots every SKU by pick velocity — placing the fastest movers in the
+    shortest, most reachable locations to cut picker travel and lift throughput. The floor below is
+    a live before/after of that re-slotting. Press <b style="color:var(--ink)">Run optimization</b> to watch it work.
+  </p>
+
+  <div class="ss-stage">
+    <!-- Warehouse floor -->
+    <div class="ss-floor-card">
+      <div class="ss-floor-head">
+        <h3>Pick zone — 80 active slots</h3>
+        <span class="ss-state-tag" id="stateTag">As-found slotting</span>
+      </div>
+
+      <div class="ss-floor" id="floor">
+        <svg viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true">
+          <g id="racks"></g>
+          <!-- pack-out / dock -->
+          <rect x="62" y="91.5" width="36" height="7" rx="1.4" fill="#1d2942" stroke="#33476f" stroke-width=".4" vector-effect="non-scaling-stroke"/>
+          <text x="80" y="96.2" text-anchor="middle" font-size="3.1" fill="#7d8db0" font-family="'JetBrains Mono',monospace" letter-spacing=".2">PACK-OUT / DOCK</text>
+          <polyline id="pickPath" fill="none" stroke="var(--path-before)" stroke-width="1.4"
+                    stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"
+                    opacity="0" points=""/>
+        </svg>
+        <div class="ss-chips" id="chips"></div>
+      </div>
+
+      <div class="ss-floor-foot">
+        <div class="ss-legend">
+          slow
+          <span class="ss-grad"></span>
+          fast&nbsp;movers
+        </div>
+        <div class="ss-controls">
+          <div class="ss-seg" role="tablist" aria-label="Slotting state">
+            <button id="segBefore" class="active" role="tab">As-found</button>
+            <button id="segAfter" role="tab">Optimized</button>
+          </div>
+          <button class="ss-run" id="runBtn">▶ Run optimization</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="ss-metrics">
+      <div class="metric" id="m-travel">
+        <div class="label">Total picker travel</div>
+        <div class="val"><span data-num>0</span><span class="unit">index</span></div>
+        <div class="delta" data-delta>—</div>
+        <div class="bar"></div>
+      </div>
+      <div class="metric" id="m-rate">
+        <div class="label">Modeled pick rate</div>
+        <div class="val"><span data-num>0</span><span class="unit">picks/hr</span></div>
+        <div class="delta" data-delta>—</div>
+        <div class="bar"></div>
+      </div>
+      <div class="metric" id="m-golden">
+        <div class="label">Volume in golden zone</div>
+        <div class="val"><span data-num>0</span><span class="unit">%</span></div>
+        <div class="delta" data-delta>—</div>
+        <div class="bar"></div>
+      </div>
+      <div class="ss-wave">
+        Sample 9-line order — travel per wave:
+        <b><span class="mono" id="waveBefore">—</span></b> as-found
+        → <b><span class="mono after" id="waveAfter">—</span></b> optimized.
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="ss-how">
+    <h2>How the model works</h2>
+    <div class="ss-steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h4>Profile demand</h4>
+        <p>Rank every SKU by pick velocity (<code>picks/day</code>) pulled from WMS history. A small head of fast movers drives most of the labor.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h4>Score the slots</h4>
+        <p>Score each location by walking distance to pack-out and pick height, producing a cost surface across the floor.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h4>Assign the golden zone</h4>
+        <p>Map the fastest movers to the cheapest slots, constrained by case <code>dimensions</code> and <code>weight</code> so bulky SKUs stay feasible.</p>
+      </div>
+      <div class="step">
+        <div class="num">04</div>
+        <h4>Minimize travel</h4>
+        <p>Objective is <code>Σ(velocity × distance)</code>. The model re-slots until that total stops falling, then reports the new layout.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Impact -->
+  <div class="ss-impact">
+    <h2>Why it matters</h2>
+    <p>
+      In a distribution center, picker travel is the single largest controllable cost in the pick
+      operation. By re-slotting to demand instead of leaving SKUs where they were first received,
+      the same team walks less and picks more — with no new equipment and no added headcount. This
+      POC turned that idea into a repeatable, data-driven model, built as a candidate for
+      standardization across the DHL network.
+    </p>
+    <div class="ss-tech">
+      <span class="tech">Python</span>
+      <span class="tech">pandas</span>
+      <span class="tech">WMS pick history</span>
+      <span class="tech">Heuristic optimization</span>
+      <span class="tech">AI-assisted dev · Codex + Claude Code</span>
+    </div>
+  </div>
+
+  <div class="ss-note" id="note">
+    Figures shown are outputs of the simulation model on representative pick data, not measured production results.
+  </div>
+</section>
+
+<div class="ss-tip" id="tip"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     CONFIG — tweak these to retell the story or plug in real data
+     ============================================================ */
+  const AISLES   = 5;
+  const DEPTH    = 8;          // slots deep per aisle face
+  const WAVE_N   = 9;          // SKUs in the sample order path
+  const GOLDEN_N = 16;         // slots that count as the "golden zone"
+  const SEED     = 73;         // change for a different SKU mix
+  const FT_PER_UNIT = 1.35;    // logical-unit -> feet, for the wave readout
+  const BASE_SEC = 12;         // fixed seconds per pick (grab, scan, place)
+  const SEC_PER_DIST = 0.42;   // travel seconds per distance unit
+  const AISLE_X  = [24,52,80,108,136];
+  const DOCK_X   = 80, DOCK_Y = 93, CROSS_Y = 89;
+  const Y_FRONT = 86, Y_BACK = 14;
+  const FACE_DX = 4.4;
+
+  /* ---------- deterministic RNG ---------- */
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(SEED);
+  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+  /* ---------- geometry: build slots ---------- */
+  const yForDepth = d => Y_FRONT - d*((Y_FRONT-Y_BACK)/(DEPTH-1));
+  const slots = [];
+  for(let a=0;a<AISLES;a++){
+    for(const face of ['L','R']){
+      for(let d=0;d<DEPTH;d++){
+        const x = AISLE_X[a] + (face==='R'? FACE_DX : -FACE_DX);
+        const y = yForDepth(d);
+        const horiz = Math.abs(AISLE_X[a]-DOCK_X);
+        const dist  = horiz + (CROSS_Y - y) + 2;   // dock->aisle + up aisle + reach
+        slots.push({a,face,d,x,y,dist});
+      }
+    }
+  }
+
+  /* ---------- SKUs: skewed velocity (few fast movers) ---------- */
+  const N = slots.length;
+  const skus = [];
+  for(let i=0;i<N;i++){
+    const v = Math.max(1, Math.round(Math.pow(rng(),2.2)*100));
+    skus.push({id:'SKU-'+(1000+Math.floor(rng()*8999)), vel:v});
+  }
+  const maxV = Math.max(...skus.map(s=>s.vel));
+  const totalVol = skus.reduce((a,s)=>a+s.vel,0);
+
+  /* ---------- assignments (chip index -> slot index) ---------- */
+  // optimized: fastest SKU -> cheapest slot
+  const slotsByDist = slots.map((s,i)=>i).sort((i,j)=>slots[i].dist-slots[j].dist);
+  const skusByVel   = skus.map((s,i)=>i).sort((i,j)=>skus[j].vel-skus[i].vel);
+  const optSlotForChip = new Array(N);
+  skusByVel.forEach((chip,rank)=>{ optSlotForChip[chip] = slotsByDist[rank]; });
+  // as-found: shuffled
+  const shuffledSlots = shuffle(slots.map((s,i)=>i));
+  const foundSlotForChip = new Array(N);
+  for(let c=0;c<N;c++){ foundSlotForChip[c] = shuffledSlots[c]; }
+
+  /* ---------- metrics ---------- */
+  function travelIndex(map){let t=0;for(let c=0;c<N;c++) t+=skus[c].vel*slots[map[c]].dist;return t;}
+  function goldenCoverage(map){
+    const golden = new Set(slotsByDist.slice(0,GOLDEN_N));
+    let vol=0; for(let c=0;c<N;c++){ if(golden.has(map[c])) vol+=skus[c].vel; }
+    return vol/totalVol*100;
+  }
+  function pickRate(map){
+    const avgDist = travelIndex(map)/totalVol;
+    const secPerPick = BASE_SEC + SEC_PER_DIST*avgDist;
+    return 3600/secPerPick;
+  }
+  const M = {
+    before:{travel:travelIndex(foundSlotForChip), rate:pickRate(foundSlotForChip), gold:goldenCoverage(foundSlotForChip)},
+    after :{travel:travelIndex(optSlotForChip),   rate:pickRate(optSlotForChip),   gold:goldenCoverage(optSlotForChip)}
+  };
+
+  /* ---------- sample order wave (the 9 fastest SKUs) ---------- */
+  const waveChips = skusByVel.slice(0,WAVE_N);
+  function buildPath(map){
+    // order targets aisle-by-aisle (serpentine) for realistic travel
+    const targets = waveChips.map(c=>({c,s:slots[map[c]]}));
+    targets.sort((p,q)=> p.s.a-q.s.a || (p.s.a%2? q.s.d-p.s.d : p.s.d-q.s.d));
+    const pts=[[DOCK_X,DOCK_Y]];
+    let len=0, prev=[DOCK_X,DOCK_Y];
+    const add=(x,y)=>{len+=Math.hypot(x-prev[0],y-prev[1]);pts.push([x,y]);prev=[x,y];};
+    let lastA=-1;
+    for(const t of targets){
+      const ax=AISLE_X[t.s.a];
+      if(t.s.a!==lastA){ add(ax,CROSS_Y); lastA=t.s.a; }       // move along cross-aisle
+      add(t.s.x,t.s.y);                                         // into the slot
+      add(ax,CROSS_Y);                                          // back to cross-aisle
+    }
+    add(DOCK_X,DOCK_Y);
+    return {pts,len};
+  }
+  const pathBefore = buildPath(foundSlotForChip);
+  const pathAfter  = buildPath(optSlotForChip);
+
+  /* ---------- color by velocity ---------- */
+  function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  const C_SLOW=hex('#4C8FB5'), C_MID=hex('#F2B33D'), C_FAST=hex('#FF5A3C');
+  function velColor(v){
+    const t=v/maxV; let a,b,k;
+    if(t<0.5){a=C_SLOW;b=C_MID;k=t/0.5;} else {a=C_MID;b=C_FAST;k=(t-0.5)/0.5;}
+    const r=Math.round(a[0]+(b[0]-a[0])*k),g=Math.round(a[1]+(b[1]-a[1])*k),bl=Math.round(a[2]+(b[2]-a[2])*k);
+    return `rgb(${r},${g},${bl})`;
+  }
+
+  /* ============================================================
+     RENDER
+     ============================================================ */
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const floor = document.getElementById('floor');
+  const chipsWrap = document.getElementById('chips');
+  const pathEl = document.getElementById('pickPath');
+  const stateTag = document.getElementById('stateTag');
+  const tip = document.getElementById('tip');
+  if(RM) document.querySelector('.slot-sim').classList.add('reduced');
+
+  // racking backdrop
+  const rackG = document.getElementById('racks');
+  let rackSVG='';
+  for(const ax of AISLE_X){
+    rackSVG += `<rect x="${ax-7.4}" y="11" width="5.6" height="78" rx="1" fill="var(--rack)" stroke="var(--rack-line)" stroke-width=".3" vector-effect="non-scaling-stroke"/>`;
+    rackSVG += `<rect x="${ax+1.8}" y="11" width="5.6" height="78" rx="1" fill="var(--rack)" stroke="var(--rack-line)" stroke-width=".3" vector-effect="non-scaling-stroke"/>`;
+  }
+  rackG.innerHTML = rackSVG;
+
+  // chips
+  const chipEls=[];
+  for(let c=0;c<N;c++){
+    const el=document.createElement('div');
+    el.className='chip';
+    el.style.background=velColor(skus[c].vel);
+    el.dataset.c=c;
+    el.style.transitionDelay = (skusByVel.indexOf(c)*5)+'ms';
+    chipsWrap.appendChild(el);
+    chipEls.push(el);
+    el.addEventListener('mouseenter',e=>showTip(e,c));
+    el.addEventListener('mousemove',moveTip);
+    el.addEventListener('mouseleave',hideTip);
+  }
+  function placeChips(map){
+    for(let c=0;c<N;c++){
+      const s=slots[map[c]];
+      chipEls[c].style.left=(s.x/160*100)+'%';
+      chipEls[c].style.top =(s.y/100*100)+'%';
+    }
+  }
+
+  function drawPath(path,color){
+    pathEl.setAttribute('points', path.pts.map(p=>p.join(',')).join(' '));
+    pathEl.setAttribute('stroke',color);
+    pathEl.style.opacity='0.95';
+    if(RM){return;}
+    // draw-in animation
+    const total = pathEl.getTotalLength();
+    pathEl.style.transition='none';
+    pathEl.style.strokeDasharray=total;
+    pathEl.style.strokeDashoffset=total;
+    pathEl.getBoundingClientRect();
+    pathEl.style.transition='stroke-dashoffset .9s ease';
+    pathEl.style.strokeDashoffset='0';
+  }
+
+  /* ---------- metric tweening ---------- */
+  function animNum(el,from,to,dur,fmt){
+    if(RM){el.textContent=fmt(to);return;}
+    const t0=performance.now();
+    function frame(now){
+      const k=Math.min(1,(now-t0)/dur);
+      const e=1-Math.pow(1-k,3);
+      el.textContent=fmt(from+(to-from)*e);
+      if(k<1)requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  function setMetrics(state,animate){
+    const cur=M[state];
+    const numFmt=v=>Math.round(v).toLocaleString();
+    const cards={
+      'm-travel':{val:cur.travel/1000, fmt:v=>v.toFixed(1), full:cur.travel/1000},
+      'm-rate':{val:cur.rate, fmt:v=>numFmt(v)},
+      'm-golden':{val:cur.gold, fmt:v=>Math.round(v)}
+    };
+    // travel uses /1000 index for readability
+    applyCard('m-travel', M.before.travel/1000, M.after.travel/1000, state, animate, v=>v.toFixed(1),
+      ()=>pctDelta(M.before.travel,M.after.travel,true));
+    applyCard('m-rate', M.before.rate, M.after.rate, state, animate, v=>numFmt(v),
+      ()=>pctDelta(M.before.rate,M.after.rate,false));
+    applyCard('m-golden', M.before.gold, M.after.gold, state, animate, v=>Math.round(v),
+      ()=>ptsDelta(M.before.gold,M.after.gold));
+  }
+  function applyCard(id,before,after,state,animate,fmt,deltaFn){
+    const card=document.getElementById(id);
+    const numEl=card.querySelector('[data-num]');
+    const deltaEl=card.querySelector('[data-delta]');
+    const barEl=card.querySelector('.bar');
+    const target = state==='after'?after:before;
+    const from = parseFloat(String(numEl.textContent).replace(/,/g,''))||before;
+    animNum(numEl, from, target, animate?850:0, fmt);
+    card.classList.toggle('is-after',state==='after');
+    // bar shows progress vs the best (after) state
+    const lo=Math.min(before,after), hi=Math.max(before,after);
+    const pct = hi===lo?100:((target-lo)/(hi-lo))*100;
+    barEl.style.width = (state==='after'?100:Math.max(8,pct))+'%';
+    if(state==='after'){ deltaEl.innerHTML=deltaFn(); deltaEl.classList.add('good'); }
+    else { deltaEl.textContent='baseline'; deltaEl.classList.remove('good'); }
+  }
+  function pctDelta(b,a,lowerIsBetter){
+    const change=(a-b)/b*100;
+    const arrow=change<0?'▼':'▲';
+    return `${arrow} ${Math.abs(change).toFixed(0)}% ${lowerIsBetter?'less travel':'more output'}`;
+  }
+  function ptsDelta(b,a){return `▲ ${Math.round(a-b)} pts coverage`;}
+
+  function setWave(state){
+    const wb=document.getElementById('waveBefore'), wa=document.getElementById('waveAfter');
+    const bft=Math.round(pathBefore.len*FT_PER_UNIT), aft=Math.round(pathAfter.len*FT_PER_UNIT);
+    wb.textContent=bft+' ft'; wa.textContent=aft+' ft';
+  }
+
+  /* ---------- state machine ---------- */
+  let state='before';
+  const segBefore=document.getElementById('segBefore');
+  const segAfter=document.getElementById('segAfter');
+  const runBtn=document.getElementById('runBtn');
+
+  function render(next,animate){
+    state=next;
+    placeChips(state==='after'?optSlotForChip:foundSlotForChip);
+    drawPath(state==='after'?pathAfter:pathBefore, state==='after'?'var(--path-after)':'var(--path-before)');
+    setMetrics(state,animate);
+    setWave(state);
+    stateTag.textContent = state==='after'?'Optimized slotting':'As-found slotting';
+    stateTag.classList.toggle('is-after',state==='after');
+    segBefore.classList.toggle('active',state==='before');
+    segAfter.classList.toggle('active',state==='after');
+    runBtn.textContent = state==='after'?'↻ Replay':'▶ Run optimization';
+  }
+
+  segBefore.addEventListener('click',()=>render('before',true));
+  segAfter.addEventListener('click',()=>render('after',true));
+  runBtn.addEventListener('click',()=>{
+    if(state==='after'){ render('before',false); setTimeout(()=>render('after',true),120); }
+    else render('after',true);
+  });
+
+  /* ---------- tooltip ---------- */
+  function showTip(e,c){
+    const s=slots[(state==='after'?optSlotForChip:foundSlotForChip)[c]];
+    tip.innerHTML = `${skus[c].id} · vel ${skus[c].vel}`+
+      `<span class="vbar" style="background:${velColor(skus[c].vel)}"></span><br>`+
+      `aisle ${s.a+1} · depth ${s.d+1} · cost ${Math.round(s.dist)}`;
+    tip.style.opacity='1'; moveTip(e);
+  }
+  function moveTip(e){
+    const pad=14;
+    let x=e.clientX+pad, y=e.clientY+pad;
+    const r=tip.getBoundingClientRect();
+    if(x+r.width>innerWidth) x=e.clientX-r.width-pad;
+    if(y+r.height>innerHeight) y=e.clientY-r.height-pad;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  function hideTip(){tip.style.opacity='0';}
+
+  /* ---------- boot ---------- */
+  render('before',false);
+  // initial draw of metrics from zero -> baseline
+  setTimeout(()=>setMetrics('before',true),60);
+  if(!RM){
+    setTimeout(()=>{ if(state==='before') render('after',true); },1400);
+  }
+})();
+</script>
+</body>
+</html>
